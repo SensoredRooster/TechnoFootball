@@ -1,44 +1,47 @@
-# Streamer Mogul
+# TechnoFootball
 
-Text-based **streamer / content-creator career sim** in the spirit of Football Mogul / Baseball Mogul: weekly decisions, a few core stats, and an algo roll that can make or break the week.
+Text **creator-career mogul** with Football Mogul bones: weekly decisions, a short stat sheet, an algo roll, and fail states that end the season.
+
+Public repo: https://github.com/SensoredRooster/TechnoFootball
 
 ## Run
 
 ```bash
-python streamer_mogul.py
+python techno_football.py
 ```
 
-No dependencies beyond Python 3.10+.
+Python 3.10+. No third-party packages.
 
-## Prototype loop
+## v2 loop
 
-Each week you pick **one** action (max four):
+Each week:
 
-1. Grind a longform stream
-2. Ship short-form clips
-3. Collab / networking
-4. Rest + admin
+1. Pick one action — longform grind, short-form clips, collab, or rest
+2. Niche bias slightly tweaks the numbers
+3. **Algo roll** (blessing / steady / rival-pressure dip)
+4. Rent + passive income
+5. Autosave to `save.json`
 
-Then the game resolves:
+### Fail
 
-- action deltas (subs, cash, energy, hype)
-- one **algo roll** (blessing / steady / shadowban)
-- rent + passive creator income
+- Bankrupt
+- Burnout (repeated empty-tank grinds)
+- Channel collapse
 
-### Fail states
+### Win
 
-- **Bankrupt** — cash below $0
-- **Burnout** — energy empty with repeated grind marks
-- **Channel dead** — 0 subs
+Survive 12 weeks → ending grade (Scraping by / Working creator / Breakout / Cult)
 
-### Win (prototype)
+### Save / load
 
-Survive **12 weeks** and see your ending sheet.
+- Autosave after every week
+- `s` save + quit
+- Resume prompt on next launch
 
-## Why this shape
+## Project name
 
-Mogul games are spreadsheet seasons with personality. This MVP keeps that: tiny action set, readable numbers, one random platform swing — not a chat RPG.
+**TechnoFootball** — unique label for this experiment (tech/creator life, mogul season structure). Not an NFL sim; the “football” is the Mogul DNA.
 
 ## Status
 
-Playable CLI prototype. Next ideas: save files, rival creators, platform contracts, multi-week content calendar.
+Playable CLI prototype v2. Former repo name: StreamerMogul (redirects on GitHub after rename).
