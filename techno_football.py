@@ -12,21 +12,23 @@ SAVE_PATH = Path(__file__).resolve().parent / "save.json"
 SEASON_WEEKS = 12
 
 ACTIONS = {
+    # Tuned so grind = cash/watch, clips = growth, collab = hype (not a cash trap),
+    # rest = real burnout insurance instead of a weak skip.
     "1": (
         "Grind a longform stream",
-        {"energy": -16, "cash": 55, "subs": 10, "watch": 140, "hype": 3, "burn": 0},
+        {"energy": -14, "cash": 65, "subs": 8, "watch": 150, "hype": 2, "burn": 0},
     ),
     "2": (
         "Ship short-form clips",
-        {"energy": -9, "cash": 20, "subs": 22, "watch": 35, "hype": 7, "burn": 0},
+        {"energy": -8, "cash": 18, "subs": 26, "watch": 30, "hype": 6, "burn": 0},
     ),
     "3": (
         "Collab / networking",
-        {"energy": -11, "cash": -25, "subs": 28, "watch": 50, "hype": 12, "burn": 0},
+        {"energy": -10, "cash": -10, "subs": 24, "watch": 45, "hype": 14, "burn": 0},
     ),
     "4": (
         "Rest + admin",
-        {"energy": 30, "cash": -15, "subs": 2, "watch": 0, "hype": -2, "burn": -1},
+        {"energy": 34, "cash": -12, "subs": 1, "watch": 0, "hype": -1, "burn": -2},
     ),
 }
 
@@ -133,29 +135,37 @@ def apply_action(s: dict, key: str) -> str:
 
 
 def algo_roll(s: dict) -> str:
-    """Balanced weekly platform swing: blessings rarer, disasters softer than v1."""
-    # Rival pressure nudges the table when they are hotter than you.
-    s["rival_hype"] = int(clamp(s["rival_hype"] + random.randint(-4, 6), 0, 100))
+    """Weekly platform swing: skill/hype matter more than raw coin-flip variance."""
+    # Rival drifts, but not as a runaway snowball.
+    s["rival_hype"] = int(clamp(s["rival_hype"] + random.randint(-3, 5), 0, 100))
     rival_gap = s["rival_hype"] - s["hype"]
 
     roll = random.random()
-    bless_chance = clamp(0.10 + s["hype"] / 400 - max(0, rival_gap) / 500, 0.06, 0.22)
-    doom_chance = clamp(0.14 + max(0, rival_gap) / 350 - s["sponsors"] * 0.02, 0.08, 0.24)
+    # Good play (hype + sponsors) buys blessing odds; rivals tax it lightly.
+    bless_chance = clamp(0.08 + s["hype"] / 280 + s["sponsors"] * 0.015 - max(0, rival_gap) / 600, 0.05, 0.28)
+    # Doom exists, but sponsors and rest-driven low burnout soften the floor.
+    doom_chance = clamp(
+        0.11 + max(0, rival_gap) / 420 + s["burnout"] * 0.015 - s["sponsors"] * 0.025,
+        0.05,
+        0.18,
+    )
 
     if roll < bless_chance:
-        hit = int(35 + s["subs"] * 0.05 + s["hype"] * 0.6)
+        hit = int(28 + s["subs"] * 0.035 + s["hype"] * 0.75)
         s["subs"] += hit
-        s["hype"] = int(clamp(s["hype"] + 10, 0, 100))
-        s["cash"] += 40
-        return f"Algo blessing: clip detonates (+{hit} subs, +$40)."
+        s["hype"] = int(clamp(s["hype"] + 8, 0, 100))
+        s["cash"] += 35 + s["sponsors"] * 15
+        return f"Algo blessing: clip detonates (+{hit} subs, cash bump)."
 
     if roll > 1.0 - doom_chance:
-        loss = int(8 + s["subs"] * 0.012 + max(0, rival_gap) * 0.15)
-        s["subs"] = max(40, s["subs"] - loss)  # floor so one bad week rarely zeros you
-        s["hype"] = int(clamp(s["hype"] - 6, 0, 100))
+        # Soft landing: percentage haircut with a hard floor, not a season-ender.
+        loss = int(6 + s["subs"] * 0.008 + max(0, rival_gap) * 0.1)
+        floor = 60 + s["sponsors"] * 25
+        s["subs"] = max(floor, s["subs"] - loss)
+        s["hype"] = int(clamp(s["hype"] - 4, 0, 100))
         return f"Reach dips / rival ate the feed (-{loss} subs)."
 
-    bonus = int(4 + s["hype"] * 0.35 + s["sponsors"] * 3)
+    bonus = int(5 + s["hype"] * 0.4 + s["sponsors"] * 4)
     s["subs"] += bonus
     return f"Steady distribution (+{bonus} subs). Rival hype {s['rival_hype']}."
 
@@ -212,7 +222,7 @@ def prompt_choice() -> str:
 
 
 def boot() -> dict:
-    print("TECHNOFOOTBALL — creator career mogul (text prototype v2)\n")
+    print("TECHNOFOOTBALL — creator career mogul (text prototype v2.1)\n")
     existing = load_game()
     if existing:
         ans = input(f"Resume {existing.get('name', 'save')} at week {existing.get('week')}? [Y/n] ").strip().lower()
