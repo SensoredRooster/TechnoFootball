@@ -20,11 +20,11 @@ ACTIONS = {
     ),
     "2": (
         "Ship short-form clips",
-        {"energy": -8, "cash": 18, "subs": 26, "watch": 30, "hype": 6, "burn": 0},
+        {"energy": -8, "cash": 40, "subs": 24, "watch": 30, "hype": 6, "burn": 0},
     ),
     "3": (
         "Collab / networking",
-        {"energy": -10, "cash": -10, "subs": 24, "watch": 45, "hype": 14, "burn": 0},
+        {"energy": -10, "cash": 5, "subs": 22, "watch": 45, "hype": 14, "burn": 0},
     ),
     "4": (
         "Rest + admin",
@@ -171,7 +171,7 @@ def algo_roll(s: dict) -> str:
 
 
 def weekly_costs(s: dict) -> str:
-    rent = 100 + s["sponsors"] * 35 + s["week"] * 2
+    rent = 75 + s["sponsors"] * 30 + s["week"] * 3
     s["cash"] -= rent
     passive = s["sponsors"] * 75 + s["subs"] // 45 + s["watch"] // 80
     s["cash"] += passive
@@ -222,7 +222,7 @@ def prompt_choice() -> str:
 
 
 def boot() -> dict:
-    print("TECHNOFOOTBALL — creator career mogul (text prototype v2.1)\n")
+    print("TECHNOFOOTBALL — creator career mogul (text prototype v2.2)\n")
     existing = load_game()
     if existing:
         ans = input(f"Resume {existing.get('name', 'save')} at week {existing.get('week')}? [Y/n] ").strip().lower()
