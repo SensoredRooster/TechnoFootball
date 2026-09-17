@@ -11,6 +11,30 @@ from pathlib import Path
 SAVE_PATH = Path(__file__).resolve().parent / "save.json"
 SEASON_WEEKS = 12
 
+ACTION_META = {
+    "1": {
+        "title": "Grind Longform",
+        "blurb": "Cash + watch hours. Safer lane, slower growth.",
+        "role": "SAFETY",
+    },
+    "2": {
+        "title": "Ship Clips",
+        "blurb": "Sub growth and upside. Higher variance with the algo.",
+        "role": "UPSIDE",
+    },
+    "3": {
+        "title": "Collab / Network",
+        "blurb": "Hype and reach. Builds the ladder to sponsors.",
+        "role": "HYPE",
+    },
+    "4": {
+        "title": "Rest + Admin",
+        "blurb": "Energy and burnout insurance. Little growth.",
+        "role": "RECOVER",
+    },
+}
+
+
 ACTIONS = {
     # Tuned so grind = cash/watch, clips = growth, collab = hype (not a cash trap),
     # rest = real burnout insurance instead of a weak skip.
@@ -206,6 +230,26 @@ def win_check(s: dict) -> str | None:
             f"{s['sponsors']} sponsors, burnout={s['burnout']}, rival hype={s['rival_hype']}."
         )
     return None
+
+
+
+def resolve_week(s: dict, action_key: str) -> dict:
+    """Apply one weekly action + algo + bills. Mutates state. Returns report lines."""
+    if action_key not in ACTIONS:
+        raise ValueError(f"Unknown action {action_key!r}")
+    action_line = apply_action(s, action_key)
+    algo_line = algo_roll(s)
+    bills_line = weekly_costs(s)
+    s.setdefault("history", []).append({"week": s["week"], "action": action_key, "algo": algo_line})
+    s["week"] += 1
+    save_game(s)
+    return {
+        "action": action_line,
+        "algo": algo_line,
+        "bills": bills_line,
+        "fail": fail_check(s),
+        "win": win_check(s),
+    }
 
 
 def prompt_choice() -> str:

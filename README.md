@@ -1,9 +1,32 @@
-# TechnoFootball — README for absolute beginners
+# TechnoFootball - README for absolute beginners
 
-**Yes, it is playable right now.**  
-This is a small text game you run in a terminal. You type numbers, press Enter, and manage a fake creator career for 12 weeks.
+**Yes, it is playable right now — and it has a Football Mogul-style desktop UI.**
 
-Repo: https://github.com/SensoredRooster/TechnoFootball
+## Play the GUI (recommended)
+
+1. Install Python 3.10+ from https://www.python.org/downloads/ (tick Add to PATH).
+2. Open a terminal in this folder and install the UI toolkit once:
+
+`powershell
+pip install -r requirements.txt
+`
+
+3. Double-click **
+un_gui.bat** or run:
+
+`powershell
+python mogul_app.py
+`
+
+You get a dark front-office window: sidebar (Office / Week Plan / Ledger / Rival / Season), stat cards, clickable weekly plays, week report, save/resume. Same career rules as the old text build — just not stuck in a terminal.
+
+---
+
+## Optional: classic text mode
+
+`powershell
+python techno_football.py
+`
 
 ---
 
@@ -32,7 +55,7 @@ The name **TechnoFootball** is the project name. It is **not** an NFL video game
 | A computer | Windows, Mac, or Linux |
 | **Python 3.10 or newer** | Free. The game uses only the Python standard library (no `pip install` list) |
 | This repo | Download ZIP **or** `git clone` |
-| A terminal | Windows Terminal, PowerShell, Command Prompt, macOS Terminal, etc. |
+| A terminal (optional) | Only required for text mode or installing deps |
 
 You do **not** need:
 
